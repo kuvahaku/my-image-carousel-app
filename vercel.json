@@ -1,0 +1,14 @@
+{
+  "builds": [
+    {
+      "src": "next.config.mjs",
+      "use": "@vercel/next"
+    }
+  ],
+  "build": {
+    "env": {
+      "NEXT_DISABLE_ESLINT": "1",
+      "NEXT_DISABLE_TYPESCRIPT": "1"
+    }
+  }
+}

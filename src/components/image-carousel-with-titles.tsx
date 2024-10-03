@@ -175,13 +175,8 @@ export default function ImageCarouselWithTitles() {
   }, [mouseX, mouseY]);
 
   const springConfig = { damping: 40, stiffness: 50 };
-  const rotateX = useSpring(useMotionValue(0), springConfig);
-  const rotateY = useSpring(useMotionValue(0), springConfig);
-
-  useEffect(() => {
-    mouseY.onChange((v) => rotateX.set(v));
-    mouseX.onChange((v) => rotateY.set(v));
-  }, [mouseX, mouseY, rotateX, rotateY]);
+  const rotateX = useSpring(mouseY, springConfig);
+  const rotateY = useSpring(mouseX, springConfig);
 
   const nextIndex = (currentIndex + 1) % images.length;
 
@@ -203,7 +198,7 @@ export default function ImageCarouselWithTitles() {
                 className="absolute w-full h-full flex items-center justify-center"
                 style={{
                   zIndex: zIndex * 10,
-                  y: transforms.depths[groupIndex],
+                  y: transforms.depths ? transforms.depths[groupIndex] : 0,
                   rotateY: transforms.rotateY,
                   rotateX: transforms.rotateX,
                   scale: transforms.scale,

@@ -3,8 +3,8 @@ import ImageCarouselWithTitles from "../components/image-carousel-with-titles";
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <main className="w-full h-screen">
       <ImageCarouselWithTitles />
-    </div>
+    </main>
   );
 }
