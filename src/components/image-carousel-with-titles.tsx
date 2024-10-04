@@ -50,8 +50,8 @@ const images = [
       { src: "/images/marz-3-2.png", zIndex: 2 },
     ],
   },
-  { src: "/images/april.png", title: "٩(̾●̮̮̃̾•̃̾)۶" },
-  { src: "/images/mai.png", title: "٩(̾●̮̮̃̾•̃̾)۶" },
+  { src: "/images/april.png", title: "" },
+  { src: "/images/mai.png", title: "" },
 ];
 
 function Star() {
