@@ -239,7 +239,7 @@ export default function ImageCarouselWithTitles() {
             alt={image.title || ""}
             className="w-auto h-auto max-w-full max-h-full object-contain rounded-4xl"
             style={{
-              filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.4))",
+              // filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.4))",
               y: transforms.depth,
               rotateY: transforms.rotateY,
               rotateX: transforms.rotateX,
