@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import {
   motion,
@@ -9,6 +9,7 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion";
+import ImagePreloader from "./ImagePreloader";
 
 const images = [
   { src: "/images/januar.png", title: "٩(◕‿◕｡)۶" },
@@ -94,6 +95,7 @@ StarryBackground.displayName = "StarryBackground";
 
 export default function ImageCarouselWithTitles() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -103,7 +105,7 @@ export default function ImageCarouselWithTitles() {
     const baseRotateX = useTransform(mouseY, [-100, 100], [15, -15]);
     const baseScale = useTransform(mouseX, [-100, 100], [0.95, 1.05]);
 
-    if (image.group) {
+    if ("group" in image) {
       return {
         depths: image.group.map((_, index) =>
           useTransform(
@@ -129,34 +131,37 @@ export default function ImageCarouselWithTitles() {
     }
   });
 
-  const navigateForward = () => {
+  const navigateForward = useCallback(() => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-  };
+  }, []);
 
-  const navigateBackward = () => {
+  const navigateBackward = useCallback(() => {
     setCurrentIndex(
       (prevIndex) => (prevIndex - 1 + images.length) % images.length,
     );
-  };
+  }, []);
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     navigateForward();
-  };
+  }, [navigateForward]);
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "ArrowRight") {
-      navigateForward();
-    } else if (event.key === "ArrowLeft") {
-      navigateBackward();
-    }
-  };
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === "ArrowRight") {
+        navigateForward();
+      } else if (event.key === "ArrowLeft") {
+        navigateBackward();
+      }
+    },
+    [navigateForward, navigateBackward],
+  );
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [handleKeyDown]);
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -185,7 +190,7 @@ export default function ImageCarouselWithTitles() {
   const renderImage = (image: any, index: number) => {
     const transforms = imageTransforms[index];
 
-    if (image.group) {
+    if ("group" in image) {
       return (
         <div
           className="relative w-full h-[90vh] flex items-center justify-center"
@@ -250,6 +255,22 @@ export default function ImageCarouselWithTitles() {
     }
   };
 
+  const allImageUrls = images.flatMap((image) =>
+    "group" in image ? image.group.map((g) => g.src) : [image.src],
+  );
+
+  const handleImagesLoaded = useCallback(() => {
+    console.log("All images loaded, carousel ready");
+    setImagesLoaded(true);
+  }, []);
+
+  if (!imagesLoaded) {
+    console.log("Preloading images...");
+    return (
+      <ImagePreloader images={allImageUrls} onComplete={handleImagesLoaded} />
+    );
+  }
+
   return (
     <div
       ref={containerRef}
@@ -285,12 +306,12 @@ export default function ImageCarouselWithTitles() {
 
       {/* Preload next image */}
       <div className="hidden">
-        {images[nextIndex].group ? (
+        {"group" in images[nextIndex] ? (
           images[nextIndex].group.map((groupImage: any, index: number) => (
             <Image
               key={index}
               src={groupImage.src}
-              alt={`${images[nextIndex].title || ""} - ${index + 1}`}
+              alt={`Preload Group Image ${index + 1}`}
               width={1}
               height={1}
             />
