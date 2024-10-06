@@ -112,8 +112,8 @@ export default function ImageCarouselWithTitles() {
             mouseX,
             [-100, 100],
             [
-              (image.group.length - index) * 30,
-              (image.group.length - index) * -30,
+              (image.group.length - index) * 15,
+              (image.group.length - index) * -15,
             ],
           ),
         ),
@@ -123,7 +123,7 @@ export default function ImageCarouselWithTitles() {
       };
     } else {
       return {
-        depth: useTransform(mouseX, [-100, 100], [30, -30]),
+        depth: useTransform(mouseX, [-100, 100], [15, -15]),
         rotateY: baseRotateY,
         rotateX: baseRotateX,
         scale: baseScale,
@@ -168,8 +168,8 @@ export default function ImageCarouselWithTitles() {
       const container = containerRef.current;
       if (container) {
         const { left, top, width, height } = container.getBoundingClientRect();
-        const x = ((event.clientX - left) / width - 0.5) * 200;
-        const y = ((event.clientY - top) / height - 0.5) * 200;
+        const x = ((event.clientX - left) / width - 0.5) * 100;
+        const y = ((event.clientY - top) / height - 0.5) * 100;
         mouseX.set(x);
         mouseY.set(y);
       }
@@ -181,7 +181,7 @@ export default function ImageCarouselWithTitles() {
     };
   }, [mouseX, mouseY]);
 
-  const springConfig = { damping: 40, stiffness: 50 };
+  const springConfig = { damping: 60, stiffness: 40 };
   const rotateX = useSpring(mouseY, springConfig);
   const rotateY = useSpring(mouseX, springConfig);
 
