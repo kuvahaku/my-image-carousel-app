@@ -35,24 +35,55 @@ const images = [
     ],
   },
   { src: "/images/februar-1.png", title: "٩(̾●̮̮̃̾•̃̾)۶" },
-  { src: "/images/februar-2.png", title: "٩(̾●̮̮̃̾•̃̾)۶" },
+  { src: "/images/februar-2.png", title: "" },
   {
     group: [
       { src: "/images/februar-3-1.png", zIndex: 0 },
       { src: "/images/februar-3-2.png", zIndex: 2 },
     ],
   },
-  { src: "/images/marz.png", title: "٩(̾●̮̮̃̾•̃̾)۶" },
+  { src: "/images/marz.png", title: "۶" },
   { src: "/images/marz-1.gif" },
   { src: "/images/marz-2.gif" },
   {
     group: [
-      { src: "/images/marz-3-1.png", zIndex: 0 },
+      { src: "/images/marz-3-1.jpg", zIndex: 0 },
       { src: "/images/marz-3-2.png", zIndex: 2 },
     ],
   },
   { src: "/images/april.png", title: "" },
+  { src: "/images/april-1.gif", title: "" },
+  { src: "/images/april-2.gif", title: "" },
+  {
+    group: [
+      { src: "/images/april-3-1.jpg", zIndex: 0 },
+      { src: "/images/april-3-2.png", zIndex: 2 },
+    ],
+  },
   { src: "/images/mai.png", title: "" },
+  {
+    group: [
+      { src: "/images/mai-3-1.png", zIndex: 0 },
+      { src: "/images/mai-3-2.png", zIndex: 2 },
+    ],
+  },
+  {
+    group: [
+      { src: "/images/mai-4-1.png", zIndex: 0 },
+      { src: "/images/mai-4-2.png", zIndex: 2 },
+    ],
+  },
+  { src: "/images/juni.png", title: "" },
+  { src: "/images/juni-1.jpg", title: "" },
+  { src: "/images/juli.png", title: "" },
+  {
+    group: [
+      { src: "/images/juli-3-1.jpg", zIndex: 0 },
+      { src: "/images/juli-3-2.png", zIndex: 2 },
+    ],
+  },
+  { src: "/images/august.png", title: "" },
+  { src: "/images/september.png", title: "" },
 ];
 
 function Star() {
@@ -99,18 +130,23 @@ export default function ImageCarouselWithTitles() {
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const autoX = useMotionValue(0);
+  const autoY = useMotionValue(0);
+
+  const combinedX = useTransform([autoX, mouseX], ([ax, mx]) => ax + mx);
+  const combinedY = useTransform([autoY, mouseY], ([ay, my]) => ay + my);
 
   const imageTransforms = images.map((image) => {
-    const baseRotateY = useTransform(mouseX, [-100, 100], [-15, 15]);
-    const baseRotateX = useTransform(mouseY, [-100, 100], [15, -15]);
-    const baseScale = useTransform(mouseX, [-100, 100], [0.95, 1.05]);
+    const baseRotateY = useTransform(combinedX, [-130, 130], [-15, 15]);
+    const baseRotateX = useTransform(combinedY, [-120, 120], [15, -15]);
+    const baseScale = useTransform(combinedX, [-130, 130], [0.95, 1.05]);
 
-    if ("group" in image) {
+    if ("group" in image && image.group) {
       return {
         depths: image.group.map((_, index) =>
           useTransform(
-            mouseX,
-            [-100, 100],
+            combinedX,
+            [-130, 130],
             [
               (image.group.length - index) * 15,
               (image.group.length - index) * -15,
@@ -123,7 +159,7 @@ export default function ImageCarouselWithTitles() {
       };
     } else {
       return {
-        depth: useTransform(mouseX, [-100, 100], [15, -15]),
+        depth: useTransform(combinedX, [-130, 130], [15, -15]),
         rotateY: baseRotateY,
         rotateX: baseRotateX,
         scale: baseScale,
@@ -181,16 +217,26 @@ export default function ImageCarouselWithTitles() {
     };
   }, [mouseX, mouseY]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const time = Date.now() / 5000; // Slower movement
+      autoX.set(Math.sin(time) * 30); // Reduced amplitude
+      autoY.set(Math.cos(time) * 20); // Reduced amplitude
+    }, 16);
+
+    return () => clearInterval(interval);
+  }, [autoX, autoY]);
+
   const springConfig = { damping: 60, stiffness: 40 };
-  const rotateX = useSpring(mouseY, springConfig);
-  const rotateY = useSpring(mouseX, springConfig);
+  const rotateX = useSpring(combinedY, springConfig);
+  const rotateY = useSpring(combinedX, springConfig);
 
   const nextIndex = (currentIndex + 1) % images.length;
 
   const renderImage = (image: any, index: number) => {
     const transforms = imageTransforms[index];
 
-    if ("group" in image) {
+    if ("group" in image && image.group) {
       return (
         <div
           className="relative w-full h-[90vh] flex items-center justify-center"
@@ -239,7 +285,6 @@ export default function ImageCarouselWithTitles() {
             alt={image.title || ""}
             className="w-auto h-auto max-w-full max-h-full object-contain rounded-4xl"
             style={{
-              // filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.4))",
               y: transforms.depth,
               rotateY: transforms.rotateY,
               rotateX: transforms.rotateX,
@@ -256,7 +301,9 @@ export default function ImageCarouselWithTitles() {
   };
 
   const allImageUrls = images.flatMap((image) =>
-    "group" in image ? image.group.map((g) => g.src) : [image.src],
+    "group" in image && image.group
+      ? image.group.map((g) => g.src)
+      : [image.src],
   );
 
   const handleImagesLoaded = useCallback(() => {
@@ -306,7 +353,7 @@ export default function ImageCarouselWithTitles() {
 
       {/* Preload next image */}
       <div className="hidden">
-        {"group" in images[nextIndex] ? (
+        {"group" in images[nextIndex] && images[nextIndex].group ? (
           images[nextIndex].group.map((groupImage: any, index: number) => (
             <Image
               key={index}
@@ -318,8 +365,8 @@ export default function ImageCarouselWithTitles() {
           ))
         ) : (
           <Image
-            src={images[nextIndex].src}
-            alt={images[nextIndex].title || ""}
+            src={(images[nextIndex] as { src: string }).src}
+            alt={(images[nextIndex] as { title?: string }).title || ""}
             width={1}
             height={1}
           />
