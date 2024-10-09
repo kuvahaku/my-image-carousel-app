@@ -8,8 +8,12 @@ import {
   useSpring,
   useMotionValue,
   useTransform,
+  animate,
 } from "framer-motion";
 import ImagePreloader from "./ImagePreloader";
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
 
 const images = [
   { src: "/images/januar.png", title: "٩(◕‿◕｡)۶" },
@@ -75,15 +79,61 @@ const images = [
   },
   { src: "/images/juni.png", title: "" },
   { src: "/images/juni-1.jpg", title: "" },
+
+  {
+    group: [
+      { src: "/images/juni-1-1.png", zIndex: 0 },
+      { src: "/images/juni-1-2.png", zIndex: 2 },
+    ],
+  },
+
   { src: "/images/juli.png", title: "" },
+
+  {
+    group: [
+      { src: "/images/juli-4-1.png", zIndex: 0 },
+      { src: "/images/juli-4-2.png", zIndex: 2 },
+    ],
+  },
   {
     group: [
       { src: "/images/juli-3-1.jpg", zIndex: 0 },
       { src: "/images/juli-3-2.png", zIndex: 2 },
     ],
   },
-  { src: "/images/august.png", title: "" },
+  //{ src: "/images/august.png", title: "" },
+  {
+    group: [
+      { src: "/images/august-b.png", zIndex: 0 },
+      { src: "/images/august-a.png", zIndex: 2 },
+    ],
+  },
+
+  { src: "/images/august-2.gif", title: "" },
+  { src: "/images/pinball.mp4", title: "" },
+  { src: "/images/august-1.jpg", title: "" },
+  {
+    group: [
+      { src: "/images/september-2-1.jpg", zIndex: 0 },
+      { src: "/images/september-2-2.png", zIndex: 2 },
+    ],
+  },
+
   { src: "/images/september.png", title: "" },
+
+  {
+    group: [
+      { src: "/images/september-1-1.jpg", zIndex: 0 },
+      { src: "/images/september-1-2.png", zIndex: 2 },
+    ],
+  },
+
+  {
+    group: [
+      { src: "/images/september-3-1.jpg", zIndex: 0 },
+      { src: "/images/september-3-2.png", zIndex: 2 },
+    ],
+  },
 ];
 
 function Star() {
@@ -133,23 +183,29 @@ export default function ImageCarouselWithTitles() {
   const autoX = useMotionValue(0);
   const autoY = useMotionValue(0);
 
-  const combinedX = useTransform([autoX, mouseX], ([ax, mx]) => ax + mx);
-  const combinedY = useTransform([autoY, mouseY], ([ay, my]) => ay + my);
+  const combinedX = useTransform(
+    [autoX, mouseX],
+    ([ax, mx]: [number, number]) => clamp(ax * 0.2 + mx * 0.8, -50, 50),
+  );
+  const combinedY = useTransform(
+    [autoY, mouseY],
+    ([ay, my]: [number, number]) => clamp(ay * 0.2 + my * 0.8, -50, 50),
+  );
 
   const imageTransforms = images.map((image) => {
-    const baseRotateY = useTransform(combinedX, [-130, 130], [-15, 15]);
-    const baseRotateX = useTransform(combinedY, [-120, 120], [15, -15]);
-    const baseScale = useTransform(combinedX, [-130, 130], [0.95, 1.05]);
+    const baseRotateY = useTransform(combinedX, [-50, 50], [-5, 5]);
+    const baseRotateX = useTransform(combinedY, [-50, 50], [5, -5]);
+    const baseScale = useTransform(combinedX, [-50, 50], [0.98, 1.02]);
 
     if ("group" in image && image.group) {
       return {
         depths: image.group.map((_, index) =>
           useTransform(
             combinedX,
-            [-130, 130],
+            [-50, 50],
             [
-              (image.group.length - index) * 15,
-              (image.group.length - index) * -15,
+              (image.group.length - index) * 5,
+              (image.group.length - index) * -5,
             ],
           ),
         ),
@@ -159,7 +215,7 @@ export default function ImageCarouselWithTitles() {
       };
     } else {
       return {
-        depth: useTransform(combinedX, [-130, 130], [15, -15]),
+        depth: useTransform(combinedX, [-50, 50], [5, -5]),
         rotateY: baseRotateY,
         rotateX: baseRotateX,
         scale: baseScale,
@@ -218,16 +274,41 @@ export default function ImageCarouselWithTitles() {
   }, [mouseX, mouseY]);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    const handleMouseMove = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        animate(mouseX, 0, {
+          duration: 1,
+          ease: "easeOut",
+        });
+        animate(mouseY, 0, {
+          duration: 1,
+          ease: "easeOut",
+        });
+      }, 2000); // Start resetting after 2 seconds of no movement
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      clearTimeout(timeoutId);
+    };
+  }, [mouseX, mouseY]);
+
+  useEffect(() => {
     const interval = setInterval(() => {
-      const time = Date.now() / 5000; // Slower movement
-      autoX.set(Math.sin(time) * 30); // Reduced amplitude
-      autoY.set(Math.cos(time) * 20); // Reduced amplitude
+      const time = Date.now() / 8000; // Slower movement
+      autoX.set(Math.sin(time) * 100); // Reduced amplitude
+      autoY.set(Math.cos(time) * 50); // Reduced amplitude
     }, 16);
 
     return () => clearInterval(interval);
   }, [autoX, autoY]);
 
-  const springConfig = { damping: 60, stiffness: 40 };
+  const springConfig = { damping: 15, stiffness: 50 };
   const rotateX = useSpring(combinedY, springConfig);
   const rotateY = useSpring(combinedX, springConfig);
 
@@ -244,6 +325,7 @@ export default function ImageCarouselWithTitles() {
         >
           {image.group.map((groupImage: any, groupIndex: number) => {
             const zIndex = groupImage.zIndex;
+            const isVideo = groupImage.src.endsWith(".mp4");
 
             return (
               <motion.div
@@ -261,40 +343,78 @@ export default function ImageCarouselWithTitles() {
                 exit={{ opacity: 0, z: 200 * (groupIndex + 1) }}
                 transition={{ duration: 0.8, delay: groupIndex * 0.2 }}
               >
-                <motion.img
-                  src={groupImage.src}
-                  alt={`${image.title || ""} - ${groupIndex + 1}`}
-                  className="w-auto h-auto max-w-full max-h-full object-contain rounded-4xl"
-                  style={{
-                    filter: `drop-shadow(0 ${10 + zIndex * 5}px ${20 + zIndex * 10}px rgba(0,0,0,0.4))`,
-                  }}
-                />
+                {isVideo ? (
+                  <motion.video
+                    key={groupImage.src}
+                    src={groupImage.src}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-auto h-auto max-w-full max-h-full object-contain rounded-4xl"
+                    style={{
+                      filter: `drop-shadow(0 ${10 + zIndex * 5}px ${20 + zIndex * 10}px rgba(0,0,0,0.4))`,
+                    }}
+                  />
+                ) : (
+                  <motion.img
+                    src={groupImage.src}
+                    alt={`${image.title || ""} - ${groupIndex + 1}`}
+                    className="w-auto h-auto max-w-full max-h-full object-contain rounded-4xl"
+                    style={{
+                      filter: `drop-shadow(0 ${10 + zIndex * 5}px ${20 + zIndex * 10}px rgba(0,0,0,0.4))`,
+                    }}
+                  />
+                )}
               </motion.div>
             );
           })}
         </div>
       );
     } else {
+      const isVideo = image.src.endsWith(".mp4");
       return (
         <motion.div
           className="relative w-full h-[90vh] flex items-center justify-center"
           style={{ perspective: "1500px" }}
         >
-          <motion.img
-            src={image.src}
-            alt={image.title || ""}
-            className="w-auto h-auto max-w-full max-h-full object-contain rounded-4xl"
-            style={{
-              y: transforms.depth,
-              rotateY: transforms.rotateY,
-              rotateX: transforms.rotateX,
-              scale: transforms.scale,
-            }}
-            initial={{ opacity: 0, z: -200 }}
-            animate={{ opacity: 1, z: 0 }}
-            exit={{ opacity: 0, z: 200 }}
-            transition={{ duration: 0.8 }}
-          />
+          {isVideo ? (
+            <motion.video
+              key={image.src}
+              src={image.src}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-auto h-auto max-w-full max-h-full object-contain rounded-4xl"
+              style={{
+                y: transforms.depth,
+                rotateY: transforms.rotateY,
+                rotateX: transforms.rotateX,
+                scale: transforms.scale,
+              }}
+              initial={{ opacity: 0, z: -200 }}
+              animate={{ opacity: 1, z: 0 }}
+              exit={{ opacity: 0, z: 200 }}
+              transition={{ duration: 0.8 }}
+            />
+          ) : (
+            <motion.img
+              src={image.src}
+              alt={image.title || ""}
+              className="w-auto h-auto max-w-full max-h-full object-contain rounded-4xl"
+              style={{
+                y: transforms.depth,
+                rotateY: transforms.rotateY,
+                rotateX: transforms.rotateX,
+                scale: transforms.scale,
+              }}
+              initial={{ opacity: 0, z: -200 }}
+              animate={{ opacity: 1, z: 0 }}
+              exit={{ opacity: 0, z: 200 }}
+              transition={{ duration: 0.8 }}
+            />
+          )}
         </motion.div>
       );
     }
