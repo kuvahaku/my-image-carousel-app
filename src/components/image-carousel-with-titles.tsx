@@ -287,7 +287,7 @@ export default function ImageCarouselWithTitles() {
           duration: 1,
           ease: "easeOut",
         });
-      }, 2000); // Start resetting after 2 seconds of no movement
+      }, 2000);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
