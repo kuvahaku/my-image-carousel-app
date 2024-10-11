@@ -15,120 +15,158 @@ import ImagePreloader from "./ImagePreloader";
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
-const images = [
-  { src: "/images/januar.png", title: "٩(◕‿◕｡)۶" },
-  { src: "/images/januar-1.png", title: "٩(◕‿◕｡)۶" },
+type MediaItem =
+  | { type: "image" | "video"; src: string; title?: string }
+  | { type: "group"; group: { src: string; zIndex: number }[] };
+
+const media: MediaItem[] = [
+  { type: "image", src: "/images/januar.png", title: "٩(◕‿◕｡)۶" },
+  { type: "image", src: "/images/januar-1.png", title: "٩(◕‿◕｡)۶" },
   {
+    type: "group",
     group: [
-      { src: "/images/januar-1-1.png", zIndex: 0 },
-      { src: "/images/januar-1-2.png", zIndex: 2 },
+      { src: "/images/januar-2-1.png", zIndex: 0 },
+      { src: "/images/januar-2-2.png", zIndex: 2 },
     ],
   },
-  { src: "/images/januar-2.png", title: "٩(◕‿◕｡)۶" },
   {
+    type: "group",
+    group: [
+      { src: "/images/januar-4-1.png", zIndex: 0 },
+      { src: "/images/januar-4-2.png", zIndex: 2 },
+    ],
+  },
+  {
+    type: "group",
     group: [
       { src: "/images/januar-3-1.png", zIndex: 0 },
       { src: "/images/januar-3-2.png", zIndex: 2 },
     ],
   },
-  { src: "/images/image2.gif", title: "Special Sale" },
+  { type: "image", src: "/images/januar.gif", title: "Special Sale" },
   {
+    type: "group",
     group: [
       { src: "/images/februar-1-1.png", zIndex: 0 },
       { src: "/images/februar-1-2.png", zIndex: 2 },
     ],
   },
-  { src: "/images/februar-1.png", title: "٩(̾●̮̮̃̾•̃̾)۶" },
-  { src: "/images/februar-2.png", title: "" },
+  { type: "image", src: "/images/februar-1.png", title: "٩(̾●̮̮̃̾•̃̾)۶" },
+  { type: "image", src: "/images/februar-2.png", title: "" },
   {
+    type: "group",
     group: [
       { src: "/images/februar-3-1.png", zIndex: 0 },
       { src: "/images/februar-3-2.png", zIndex: 2 },
     ],
   },
-  { src: "/images/marz.png", title: "۶" },
-  { src: "/images/marz-1.gif" },
-  { src: "/images/marz-2.gif" },
+  { type: "image", src: "/images/marz.png", title: "۶" },
+
+  { type: "image", src: "/images/marz-1.gif" },
+
   {
+    type: "group",
+    group: [
+      { src: "/images/marz-2-1.jpg", zIndex: 0 },
+      { type: "video", src: "/images/memory-card.webm", zIndex: 2 },
+    ],
+  },
+
+  //{ type: "image", src: "/images/marz-2.gif" },
+  //{ type: "video", src: "/images/memory-card.webm", zIndex: 2 },
+  {
+    type: "group",
     group: [
       { src: "/images/marz-3-1.jpg", zIndex: 0 },
       { src: "/images/marz-3-2.png", zIndex: 2 },
     ],
   },
-  { src: "/images/april.png", title: "" },
-  { src: "/images/april-1.gif", title: "" },
-  { src: "/images/april-2.gif", title: "" },
+
+  { type: "image", src: "/images/april.png", title: "" },
+
   {
+    type: "group",
     group: [
-      { src: "/images/april-3-1.jpg", zIndex: 0 },
-      { src: "/images/april-3-2.png", zIndex: 2 },
+      { src: "/images/april-1-1.jpg", zIndex: 0 },
+      { src: "/images/april-1-2.png", zIndex: 2 },
     ],
   },
-  { src: "/images/mai.png", title: "" },
+
+  { type: "image", src: "/images/april-2.gif", title: "" },
+  { type: "image", src: "/images/mai.png", title: "" },
+
   {
+    type: "group",
     group: [
       { src: "/images/mai-3-1.png", zIndex: 0 },
       { src: "/images/mai-3-2.png", zIndex: 2 },
     ],
   },
+
   {
+    type: "group",
     group: [
       { src: "/images/mai-4-1.png", zIndex: 0 },
       { src: "/images/mai-4-2.png", zIndex: 2 },
     ],
   },
-  { src: "/images/juni.png", title: "" },
-  { src: "/images/juni-1.jpg", title: "" },
+
+  { type: "image", src: "/images/juni.png", title: "" },
+
+  // { type: "image", src: "/images/juni-1.jpg", title: "" },
 
   {
+    type: "group",
+    group: [
+      { src: "/images/juni-3-1.jpg", zIndex: 0 },
+      { type: "video", src: "/images/title-idle.webm", zIndex: 2 },
+    ],
+  },
+
+  //{ type: "video", src: "/images/title-idle.webm" },
+
+  {
+    type: "group",
     group: [
       { src: "/images/juni-1-1.png", zIndex: 0 },
       { src: "/images/juni-1-2.png", zIndex: 2 },
     ],
   },
-
-  { src: "/images/juli.png", title: "" },
-
+  { type: "image", src: "/images/juli.png", title: "" },
   {
+    type: "group",
     group: [
       { src: "/images/juli-4-1.png", zIndex: 0 },
       { src: "/images/juli-4-2.png", zIndex: 2 },
     ],
   },
   {
+    type: "group",
     group: [
       { src: "/images/juli-3-1.jpg", zIndex: 0 },
       { src: "/images/juli-3-2.png", zIndex: 2 },
     ],
   },
-  //{ src: "/images/august.png", title: "" },
+  { type: "image", src: "/images/august.png", title: "" },
+  { type: "image", src: "/images/august-1.jpg", title: "" },
   {
-    group: [
-      { src: "/images/august-b.png", zIndex: 0 },
-      { src: "/images/august-a.png", zIndex: 2 },
-    ],
-  },
-
-  { src: "/images/august-2.gif", title: "" },
-  { src: "/images/pinball.mp4", title: "" },
-  { src: "/images/august-1.jpg", title: "" },
-  {
+    type: "group",
     group: [
       { src: "/images/september-2-1.jpg", zIndex: 0 },
       { src: "/images/september-2-2.png", zIndex: 2 },
     ],
   },
-
-  { src: "/images/september.png", title: "" },
-
+  { type: "image", src: "/images/september.png", title: "" },
+  { type: "video", src: "/images/pinball.mp4", title: "" },
   {
+    type: "group",
     group: [
       { src: "/images/september-1-1.jpg", zIndex: 0 },
       { src: "/images/september-1-2.png", zIndex: 2 },
     ],
   },
-
   {
+    type: "group",
     group: [
       { src: "/images/september-3-1.jpg", zIndex: 0 },
       { src: "/images/september-3-2.png", zIndex: 2 },
@@ -176,7 +214,7 @@ StarryBackground.displayName = "StarryBackground";
 
 export default function ImageCarouselWithTitles() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [mediaLoaded, setMediaLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -192,21 +230,18 @@ export default function ImageCarouselWithTitles() {
     ([ay, my]: [number, number]) => clamp(ay * 0.2 + my * 0.8, -50, 50),
   );
 
-  const imageTransforms = images.map((image) => {
+  const imageTransforms = media.map((item) => {
     const baseRotateY = useTransform(combinedX, [-50, 50], [-5, 5]);
     const baseRotateX = useTransform(combinedY, [-50, 50], [5, -5]);
     const baseScale = useTransform(combinedX, [-50, 50], [0.98, 1.02]);
 
-    if ("group" in image && image.group) {
+    if (item.type === "group" && item.group) {
       return {
-        depths: image.group.map((_, index) =>
+        depths: item.group.map((_, index) =>
           useTransform(
             combinedX,
             [-50, 50],
-            [
-              (image.group.length - index) * 5,
-              (image.group.length - index) * -5,
-            ],
+            [(item.group.length - index) * 5, (item.group.length - index) * -5],
           ),
         ),
         rotateY: baseRotateY,
@@ -224,12 +259,12 @@ export default function ImageCarouselWithTitles() {
   });
 
   const navigateForward = useCallback(() => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % media.length);
   }, []);
 
   const navigateBackward = useCallback(() => {
     setCurrentIndex(
-      (prevIndex) => (prevIndex - 1 + images.length) % images.length,
+      (prevIndex) => (prevIndex - 1 + media.length) % media.length,
     );
   }, []);
 
@@ -300,9 +335,9 @@ export default function ImageCarouselWithTitles() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const time = Date.now() / 8000; // Slower movement
-      autoX.set(Math.sin(time) * 100); // Reduced amplitude
-      autoY.set(Math.cos(time) * 50); // Reduced amplitude
+      const time = Date.now() / 8000;
+      autoX.set(Math.sin(time) * 100);
+      autoY.set(Math.cos(time) * 50);
     }, 16);
 
     return () => clearInterval(interval);
@@ -312,20 +347,22 @@ export default function ImageCarouselWithTitles() {
   const rotateX = useSpring(combinedY, springConfig);
   const rotateY = useSpring(combinedX, springConfig);
 
-  const nextIndex = (currentIndex + 1) % images.length;
+  const nextIndex = (currentIndex + 1) % media.length;
 
-  const renderImage = (image: any, index: number) => {
+  const renderMedia = (item: MediaItem, index: number) => {
     const transforms = imageTransforms[index];
 
-    if ("group" in image && image.group) {
+    if (item.type === "group" && item.group) {
       return (
         <div
           className="relative w-full h-[90vh] flex items-center justify-center"
           style={{ perspective: "1500px" }}
         >
-          {image.group.map((groupImage: any, groupIndex: number) => {
+          {item.group.map((groupImage, groupIndex) => {
             const zIndex = groupImage.zIndex;
-            const isVideo = groupImage.src.endsWith(".mp4");
+            const isVideo =
+              groupImage.src.endsWith(".mp4") ||
+              groupImage.src.endsWith(".webm");
 
             return (
               <motion.div
@@ -359,7 +396,7 @@ export default function ImageCarouselWithTitles() {
                 ) : (
                   <motion.img
                     src={groupImage.src}
-                    alt={`${image.title || ""} - ${groupIndex + 1}`}
+                    alt={`Group Image ${groupIndex + 1}`}
                     className="w-auto h-auto max-w-full max-h-full object-contain rounded-4xl"
                     style={{
                       filter: `drop-shadow(0 ${10 + zIndex * 5}px ${20 + zIndex * 10}px rgba(0,0,0,0.4))`,
@@ -372,7 +409,7 @@ export default function ImageCarouselWithTitles() {
         </div>
       );
     } else {
-      const isVideo = image.src.endsWith(".mp4");
+      const isVideo = item.type === "video";
       return (
         <motion.div
           className="relative w-full h-[90vh] flex items-center justify-center"
@@ -380,8 +417,8 @@ export default function ImageCarouselWithTitles() {
         >
           {isVideo ? (
             <motion.video
-              key={image.src}
-              src={image.src}
+              key={item.src}
+              src={item.src}
               autoPlay
               loop
               muted
@@ -400,8 +437,8 @@ export default function ImageCarouselWithTitles() {
             />
           ) : (
             <motion.img
-              src={image.src}
-              alt={image.title || ""}
+              src={item.src}
+              alt={item.title || ""}
               className="w-auto h-auto max-w-full max-h-full object-contain rounded-4xl"
               style={{
                 y: transforms.depth,
@@ -420,21 +457,24 @@ export default function ImageCarouselWithTitles() {
     }
   };
 
-  const allImageUrls = images.flatMap((image) =>
-    "group" in image && image.group
-      ? image.group.map((g) => g.src)
-      : [image.src],
-  );
+  const allMediaUrls = media.flatMap((item) => {
+    if (item.type === "group" && item.group) {
+      return item.group.map((g) => g.src);
+    } else {
+      return [item.src];
+    }
+  });
+  console.log("All media URLs:", allMediaUrls);
 
-  const handleImagesLoaded = useCallback(() => {
-    console.log("All images loaded, carousel ready");
-    setImagesLoaded(true);
+  const handleMediaLoaded = useCallback(() => {
+    console.log("All media loaded, carousel ready");
+    setMediaLoaded(true);
   }, []);
 
-  if (!imagesLoaded) {
-    console.log("Preloading images...");
+  if (!mediaLoaded) {
+    console.log("Preloading media...");
     return (
-      <ImagePreloader images={allImageUrls} onComplete={handleImagesLoaded} />
+      <ImagePreloader media={allMediaUrls} onComplete={handleMediaLoaded} />
     );
   }
 
@@ -467,14 +507,14 @@ export default function ImageCarouselWithTitles() {
             rotateY,
           }}
         >
-          {renderImage(images[currentIndex], currentIndex)}
+          {renderMedia(media[currentIndex], currentIndex)}
         </motion.div>
       </AnimatePresence>
 
-      {/* Preload next image */}
+      {/* Preload next media */}
       <div className="hidden">
-        {"group" in images[nextIndex] && images[nextIndex].group ? (
-          images[nextIndex].group.map((groupImage: any, index: number) => (
+        {media[nextIndex].type === "group" && "group" in media[nextIndex] ? (
+          media[nextIndex].group.map((groupImage, index) => (
             <Image
               key={index}
               src={groupImage.src}
@@ -483,10 +523,17 @@ export default function ImageCarouselWithTitles() {
               height={1}
             />
           ))
+        ) : media[nextIndex].type === "video" ? (
+          <video
+            key={media[nextIndex].src}
+            src={media[nextIndex].src}
+            preload="auto"
+          />
         ) : (
           <Image
-            src={(images[nextIndex] as { src: string }).src}
-            alt={(images[nextIndex] as { title?: string }).title || ""}
+            key={media[nextIndex].src}
+            src={media[nextIndex].src}
+            alt={media[nextIndex].title || ""}
             width={1}
             height={1}
           />
@@ -495,3 +542,4 @@ export default function ImageCarouselWithTitles() {
     </div>
   );
 }
+// ...
