@@ -20,6 +20,13 @@ type MediaItem =
   | { type: "group"; group: { src: string; zIndex: number }[] };
 
 const media: MediaItem[] = [
+  {
+    type: "group",
+    group: [
+      { src: "/images/start-1-1.png", zIndex: 0 },
+      { src: "/images/start-1-2.png", zIndex: 2 },
+    ],
+  },
   { type: "image", src: "/images/januar.png", title: "٩(◕‿◕｡)۶" },
   { type: "image", src: "/images/januar-1.png", title: "٩(◕‿◕｡)۶" },
   {
@@ -170,6 +177,14 @@ const media: MediaItem[] = [
     group: [
       { src: "/images/september-3-1.jpg", zIndex: 0 },
       { src: "/images/september-3-2.png", zIndex: 2 },
+    ],
+  },
+  { type: "image", src: "/images/september-4.jpg", title: "" },
+  {
+    type: "group",
+    group: [
+      { src: "/images/end-1-1.png", zIndex: 0 },
+      { src: "/images/end-1-2.png", zIndex: 2 },
     ],
   },
 ];
